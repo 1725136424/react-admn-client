@@ -1,10 +1,10 @@
-import React, {Component, Fragment} from 'react';
+import React, {PureComponent, Fragment} from 'react';
 import {BrowserRouter, Route, Switch, Redirect} from 'react-router-dom'
-import Login from './pages/Login/Login'
-import Admin from './pages/Admin/Admin'
+import Login from './pages/Login'
+import Admin from './pages/Admin'
 import './App.less'
 
-class App extends Component {
+class App extends PureComponent {
     render() {
         return (
             <Fragment>

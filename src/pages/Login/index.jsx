@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {PureComponent} from 'react';
 import { Form, Input, Button, message } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import {login} from "../../api";
@@ -6,9 +6,9 @@ import memoryUtils from "../../utils/memoryUtils";
 import {getStore, setStore} from '../../utils/storageUtils'
 import {USER_KEY} from "../../constant";
 import logo from '../../asserts/logo.png'
-import './login.less'
+import './index.less'
 
-class Login extends Component {
+class Login extends PureComponent {
 
     onFinish = (values) => {
         console.log('Received values of form: ', values);
@@ -27,6 +27,7 @@ class Login extends Component {
             memoryUtils.user = data
             // 跳转路由
             this.props.history.push("/admin")
+            message.success("登录成功")
         } else {
             // 登录失败
             message.error('登录失败')
@@ -39,6 +40,7 @@ class Login extends Component {
             this.props.history.push('/admin')
         }
     }
+
 
     render() {
         return (
