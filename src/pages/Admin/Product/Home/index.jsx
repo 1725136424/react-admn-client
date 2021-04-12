@@ -1,86 +1,76 @@
 import React, { PureComponent } from 'react';
-import { Button, Card, Input, Select, Table } from 'antd'
+import { Button, Card, Input, message, Select, Table } from 'antd'
 import { PlusOutlined, SearchOutlined } from '@ant-design/icons'
 import LinkButton from "../../../../components/LinkButton";
-import { ADMIN_PRODUCT_ADD_ADN_UPDATE_ROUTE, ADMIN_PRODUCT_DETAIL_ROUTE } from "../../../../constant";
+import {
+    ADMIN_PRODUCT_ADD_ADN_UPDATE_ROUTE,
+    ADMIN_PRODUCT_DETAIL_ROUTE,
+    PRODUCT_PUSTAWAY_STATUS,
+    PRODUCT_SOLE_OUT_STATUS,
+    SEARCH_NAME
+} from "../../../../constant";
+import { getProducts, searchProductByCondition, updateProductStatus } from "../../../../api";
 
 const { Option } = Select
 
 class Home extends PureComponent {
 
+    state = {
+        products: [],
+        seachType: SEARCH_NAME,
+        searchValue: '',
+        page: {
+            current: 1,
+            pageSize: 3,
+            showQuickJumper: true
+        },
+        loading: false
+    }
+
     // 初始化静态数据，一般放在willMount方法中
     UNSAFE_componentWillMount() {
         // 初始化card头部数据
-        this.initCardLeft()
-        this.initCardRight()
+        this.initCard()
     }
 
-    initCardLeft = () => {
+    componentDidMount() {
+        this.fetchProducts()
+    }
+
+    // 获取商品数据
+    fetchProducts = async (pageNum = this.state.page.current, pageSize = this.state.page.pageSize) => {
+        this.setState({ loading: true })
+        const { data, status } = await getProducts(pageNum, pageSize)
+        this.setState({ loading: false })
+        if (status === 0) {
+            let { list, pageNum, pageSize, total } = data
+            list = list.map(item => ({ ...item, key: item._id }))
+            this.setState(state => ({ products: list, page: { ...state.page, current: pageNum, pageSize, total }}))
+        } else {
+            message.error('获取商品数据失败')
+        }
+    }
+
+    initCard = () => {
+        // 标题
         this.title = (
             <div>
-                <Select defaultValue='name'>
+                <Select defaultValue={ SEARCH_NAME } onChange={ this.changeSearchType }>
                     <Option value='name'>按名称搜索</Option>
                     <Option value='desc'>按描述搜索</Option>
                 </Select>
-                <Input placeholder='关键字' style={ { width: 200, margin: "0 10px" } }/>
-                <Button type='primary' icon={ <SearchOutlined/> }>搜索</Button>
+                <Input onChange={ this.changeInput } placeholder='关键字' style={ { width: 200, margin: "0 10px" } }/>
+                <Button onClick={ this.search } type='primary' icon={ <SearchOutlined/> }>搜索</Button>
             </div>
         )
-    }
 
-    initCardRight = () => {
+        // 额外信息
         this.extra = (
             <Button onClick={ this.skipAddAndUpdateUI } type='primary' icon={ <PlusOutlined/> }>添加商品</Button>
         )
-    }
 
-    // 跳转详情界面
-    skipDetailUI = () => {
-        this.props.history.push(ADMIN_PRODUCT_DETAIL_ROUTE)
-    }
-
-    // 跳转添加修改界面
-    skipAddAndUpdateUI = () => {
-        this.props.history.push(ADMIN_PRODUCT_ADD_ADN_UPDATE_ROUTE)
-    }
-
-
-    render() {
-        const dataSource = [
-            {
-                "key": "5e12b97de31bb727e4b0e349",
-                "status": 2,
-                "imgs": [
-                    "1578588737108-index.jpg"
-                ],
-                "_id": "5e12b97de31bb727e4b0e349",
-                "name": "联想ThinkPad 翼4809",
-                "desc": "年度重量级新品，X390、T490全新登场 更加轻薄机身设计9",
-                "price": 6300,
-                "pCategoryId": "5e12b8bce31bb727e4b0e348",
-                "categoryId": "5fc74b650dd9b10798413162",
-                "detail": "<p><span style=\"color: rgb(228,57,60);background-color: rgb(255,255,255);font-size: 12px;\">想你所需，超你所想！精致外观，轻薄便携带光驱，内置正版office杜绝盗版死机，全国联保两年！</span></p>\n<p><span style=\"color: rgb(102,102,102);background-color: rgb(255,255,255);font-size: 16px;\">联想（Lenovo）扬天V110 15.6英寸家用轻薄便携商务办公手提笔记本电脑 定制【E2-9010/4G/128G固态】 2G独显 内置</span></p>\n<p><span style=\"color: rgb(102,102,102);background-color: rgb(255,255,255);font-size: 16px;\"></span></p>\n",
-                "__v": 0
-            },
-            {
-                "key": "5e12b9d1e31bb727e4b0e34a",
-                "status": 1,
-                "imgs": [
-                    "image-1559402448049.jpg",
-                    "image-1559402450480.jpg"
-                ],
-                "_id": "5e12b9d1e31bb727e4b0e34a",
-                "name": "华硕(ASUS) 飞行堡垒",
-                "desc": "15.6英寸窄边框游戏笔记本电脑(i7-8750H 8G 256GSSD+1T GTX1050Ti 4G IPS)",
-                "price": 6799,
-                "pCategoryId": "5e12b8bce31bb727e4b0e348",
-                "categoryId": "5fc74b650dd9b10798413162",
-                "detail": "<p><span style=\"color: rgb(102,102,102);background-color: rgb(255,255,255);font-size: 16px;\">华硕(ASUS) 飞行堡垒6 15.6英寸窄边框游戏笔记本电脑(i7-8750H 8G 256GSSD+1T GTX1050Ti 4G IPS)火陨红黑</span>&nbsp;</p>\n<p><span style=\"color: rgb(228,57,60);background-color: rgb(255,255,255);font-size: 12px;\">【4.6-4.7号华硕集体放价，大牌够品质！】1T+256G高速存储组合！超窄边框视野无阻，强劲散热一键启动！</span>&nbsp;</p>\n",
-                "__v": 0
-            }
-        ]
-
-        const columns = [
+        // columns
+        this.columns = [
             {
                 title: '商品名称',
                 dataIndex: 'name'
@@ -90,40 +80,118 @@ class Home extends PureComponent {
                 dataIndex: 'desc'
             },
             {
+                width: 80,
                 title: '价格',
                 render: (cur) => "￥" + cur.price
             },
             {
+                width: 80,
                 title: '状态',
-                render: () => {
+                render: (cur) => {
                     return (
                         <>
-                            <Button type='primary'>上架</Button>
+                            <Button onClick={ () => this.changeProcutStatus(cur._id, cur.status) } type='primary'>
+                                {
+                                    cur.status === PRODUCT_PUSTAWAY_STATUS ? '下架' : '上架'
+                                }
+                            </Button>
                         </>
                     )
                 }
             },
             {
+                width: 120,
                 title: '操作',
-                render: () => {
+                render: (cur) => {
                     return (
                         <>
-                            <LinkButton onClick={ this.skipDetailUI }>详情</LinkButton>
+                            <LinkButton onClick={ () => this.skipDetailUI(cur) }>详情</LinkButton>
                             <LinkButton onClick={ this.skipAddAndUpdateUI }>修改</LinkButton>
                         </>
                     )
                 }
             }
         ];
+    }
 
+    // 跳转详情界面
+    skipDetailUI = (cur) => {
+        this.props.history.push(ADMIN_PRODUCT_DETAIL_ROUTE, cur)
+    }
+
+    // 跳转添加修改界面
+    skipAddAndUpdateUI = () => {
+        this.props.history.push(ADMIN_PRODUCT_ADD_ADN_UPDATE_ROUTE)
+    }
+
+    // 搜索类型的改变
+    changeSearchType = (type) => {
+        this.setState({ seachType: type })
+    }
+
+    // 受控组件事件监听
+    changeInput = (event) => {
+        const { target: { value } } = event
+        this.setState({ searchValue: value })
+    }
+
+    // 搜索按钮的点击
+    search = async () => {
+        const { searchValue, seachType } = this.state
+        if (searchValue.trim()) {
+            // 发送数据
+            const { data, status } = await searchProductByCondition(seachType, searchValue)
+            if (status === 0) {
+                const { list } = data
+                this.setState({ products: list })
+            } else {
+                message.error('请求搜索数据失败')
+            }
+        } else {
+            message.warning('请输入你要搜索的内容')
+        }
+    }
+
+    // 上架 or 下架
+    changeProcutStatus = async (id, status) => {
+        let updateStatus
+        if (status === PRODUCT_PUSTAWAY_STATUS) {
+            // 下架
+            updateStatus = PRODUCT_SOLE_OUT_STATUS
+        } else if (status === PRODUCT_SOLE_OUT_STATUS) {
+            // 上架
+            updateStatus = PRODUCT_PUSTAWAY_STATUS
+        }
+        const { status: resStatus } = await updateProductStatus(id, updateStatus)
+        if (resStatus === 0) {
+            message.success(`商品${ updateStatus === PRODUCT_PUSTAWAY_STATUS ? '上架' : '下架' }成功`)
+            // 重新获取数据
+            await this.fetchProducts()
+        } else {
+            message.error(`商品${ updateStatus === PRODUCT_PUSTAWAY_STATUS ? '上架' : '下架' }失败`)
+        }
+    }
+
+    render() {
+        console.log(11);
+        const { products: dataSource, page, loading } = this.state
+        const { columns } = this
         return (
             <>
-                <Card title={ this.title } extra={ this.extra } style={ { width: '100%' } }>
-                    <Table dataSource={ dataSource } columns={ columns } bordered/>;
+                <Card title={ this.title }
+                      extra={ this.extra }
+                      style={ { width: '100%' } }>
+                    <Table onChange={ ({ current, pageSize }) => this.fetchProducts(current, pageSize) }
+                           dataSource={ dataSource }
+                           columns={ columns }
+                           bordered
+                           pagination={ page } loading={ loading }/>;
                 </Card>
             </>
         );
     }
+
+
 }
 
 export default Home;

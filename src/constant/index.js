@@ -22,6 +22,14 @@ export const ADMIN_PRODUCT_HOME_ROUTE = ADMIN_PRODUCT_ROUTE + '/home'
 export const ADMIN_PRODUCT_ADD_ADN_UPDATE_ROUTE = ADMIN_PRODUCT_ROUTE + '/addAndUpdate'
 export const ADMIN_PRODUCT_DETAIL_ROUTE = ADMIN_PRODUCT_ROUTE + '/detail'
 
+// 搜索关键字类型
+export const SEARCH_NAME = 'name'
+export const SEARCH_DESC = 'desc'
+
+// 商品状态数据
+export const PRODUCT_PUSTAWAY_STATUS = 1
+export const PRODUCT_SOLE_OUT_STATUS = 2
+
 
 function concatPath(path) {
     return ADMIN_ROUTE === '/' ? path : ADMIN_ROUTE + path
