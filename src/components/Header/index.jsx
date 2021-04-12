@@ -1,17 +1,17 @@
-import React, {PureComponent} from 'react';
-import {withRouter} from 'react-router-dom'
-import {Modal} from 'antd'
-import {ExclamationCircleOutlined} from '@ant-design/icons';
+import React, { PureComponent } from 'react';
+import { withRouter } from 'react-router-dom'
+import { Modal } from 'antd'
+import { ExclamationCircleOutlined } from '@ant-design/icons';
 import LinkButton from '../LinkButton'
 import memoryUtils from '../../utils/memoryUtils'
-import {removeStore} from '../../utils/storageUtils'
-import {USER_KEY} from '../../constant'
+import { removeStore } from '../../utils/storageUtils'
+import { ADMIN_PRODUCT_ROUTE, LOGIN_ROUTE, USER_KEY } from '../../constant'
 import menuConfig from '../../config/menuConfig'
-import {parse} from '../../utils/dateUtils'
-import {locate, queryWeather} from '../../api'
+import { parse } from '../../utils/dateUtils'
+import { locate, queryWeather } from '../../api'
 import './index.less'
 
-const {confirm} = Modal
+const { confirm } = Modal
 
 
 class Header extends PureComponent {
@@ -33,12 +33,13 @@ class Header extends PureComponent {
         clearInterval(this.timer)
     }
 
+    // 根据路径获取导航名称
     getNavByMenuList = (list, key) => {
         let res = {}
         for (let i = 0; i < list.length; i++) {
             let cur = list[i]
             if (!cur.children) {
-                const {key: resKey} = cur
+                const { key: resKey } = cur
                 if (resKey === key) {
                     res = cur
                     break
@@ -64,7 +65,7 @@ class Header extends PureComponent {
                 // 退出
                 removeStore(USER_KEY)
                 // 登出
-                this.props.history.replace('/login')
+                this.props.history.replace(LOGIN_ROUTE)
             }
         });
     }
@@ -80,24 +81,35 @@ class Header extends PureComponent {
     // 获取天气
     getWeather = async () => {
         // 获取IP
-        let {adcode} = await locate()
+        let { adcode } = await locate()
         // 获取天气
-        let {lives} = await queryWeather({city: adcode})
-        this.setState({weather: lives[0].weather})
+        let { lives } = await queryWeather({ city: adcode })
+        this.setState({ weather: lives[0].weather })
+    }
+
+    // 初始化头部数据
+    initHeaderInfo = () => {
+        // 获取用户名
+        let { username } = memoryUtils.user
+        // 获取title
+        let { pathname } = this.props.location
+        if (pathname.indexOf(ADMIN_PRODUCT_ROUTE) !== -1) {
+            pathname = ADMIN_PRODUCT_ROUTE
+        }
+        const { title } = this.getNavByMenuList(menuConfig, pathname)
+        this.username = username
+        this.title = title
     }
 
     render() {
-        // 获取用户名
-        let {username} = memoryUtils.user
-        // 获取title
-        const {pathname} = this.props.location
-        const {title} = this.getNavByMenuList(menuConfig, pathname)
+        this.initHeaderInfo()
         // 获取动态数据
-        const {currentTime, weather} = this.state
+        const { currentTime, weather } = this.state
+        const { username, title } = this
         return (
             <div className='main-header'>
                 <div className='main-header-top'>
-                    欢迎, {username} <LinkButton onClick={this.logout}>退出</LinkButton>
+                    欢迎, { username } <LinkButton onClick={ this.logout }>退出</LinkButton>
                 </div>
                 <div className='main-header-bottom'>
                     <div className="main-header-bottom-left">

@@ -1,10 +1,10 @@
-import React, {PureComponent} from 'react';
-import { Form, Input, Button, message } from 'antd';
-import { UserOutlined, LockOutlined } from '@ant-design/icons';
-import {login} from "../../api";
+import React, { PureComponent } from 'react';
+import { Button, Form, Input, message } from 'antd';
+import { LockOutlined, UserOutlined } from '@ant-design/icons';
+import { login } from "../../api";
 import memoryUtils from "../../utils/memoryUtils";
-import {getStore, setStore} from '../../utils/storageUtils'
-import {USER_KEY} from "../../constant";
+import { getStore, setStore } from '../../utils/storageUtils'
+import { USER_KEY, ADMIN_ROUTE } from "../../constant";
 import logo from '../../asserts/logo.png'
 import './index.less'
 
@@ -17,7 +17,7 @@ class Login extends PureComponent {
     submit = async (name, { values, forms }) => {
         // 发送数据
         let res = await login(values)
-        let {status, data} = res
+        let { status, data } = res
 
         if (status === 0) {
             // 登录成功
@@ -26,7 +26,7 @@ class Login extends PureComponent {
             // 保存内存
             memoryUtils.user = data
             // 跳转路由
-            this.props.history.push("/admin")
+            this.props.history.push(ADMIN_ROUTE)
             message.success("登录成功")
         } else {
             // 登录失败
@@ -37,7 +37,7 @@ class Login extends PureComponent {
     UNSAFE_componentWillMount() {
         // 已经登录跳转后台界面
         if (getStore(USER_KEY)._id) {
-            this.props.history.push('/admin')
+            this.props.history.push(ADMIN_ROUTE)
         }
     }
 
@@ -46,25 +46,25 @@ class Login extends PureComponent {
         return (
             <div className="all">
                 <div className="header">
-                    <img src={logo} alt=""/>
+                    <img src={ logo } alt=""/>
                     React项目: 后台管理系统
                 </div>
                 <div className="main">
                     <div className="main-top">
                         用户登陆
                     </div>
-                    <Form.Provider onFormFinish={this.submit}>
+                    <Form.Provider onFormFinish={ this.submit }>
                         <Form
                             name="normal_login"
                             className="login-form"
-                            initialValues={{
+                            initialValues={ {
                                 remember: true,
-                            }}
-                            onFinish={this.onFinish}
+                            } }
+                            onFinish={ this.onFinish }
                         >
                             <Form.Item
                                 name="username"
-                                rules={[
+                                rules={ [
                                     {
                                         required: true,
                                         message: '请输入用户名',
@@ -81,13 +81,13 @@ class Login extends PureComponent {
                                         whitespace: true,
                                         message: '用户名不能包含空格'
                                     }
-                                ]}
+                                ] }
                             >
-                                <Input prefix={<UserOutlined className="site-form-item-icon" />} placeholder="请输入用户名" />
+                                <Input prefix={ <UserOutlined className="site-form-item-icon"/> } placeholder="请输入用户名"/>
                             </Form.Item>
                             <Form.Item
                                 name="password"
-                                rules={[
+                                rules={ [
                                     {
                                         required: true,
                                         message: '请输入密码',
@@ -104,10 +104,10 @@ class Login extends PureComponent {
                                         whitespace: true,
                                         message: '密码不能包含空格'
                                     }
-                                ]}
+                                ] }
                             >
                                 <Input
-                                    prefix={<LockOutlined className="site-form-item-icon" />}
+                                    prefix={ <LockOutlined className="site-form-item-icon"/> }
                                     type="password"
                                     placeholder="请输入密码"
                                 />
