@@ -32,6 +32,18 @@ export const saveProduct = (params) => POST('/manage/product/add', params)
 // 修改商品
 export const editProduct = (params) => POST('/manage/product/update', params)
 
+// 获取所有用户列表
+export const getAllUser = () => GET('/manage/user/list')
+
+// 获取所有的角色
+export const getAllRole = () => GET('/manage/role/list')
+
+// 动态添加修改用户
+export const addAndUpdateUser = (type, params) => POST(`/manage/user/${ type }`, params)
+
+// 删除用户
+export const deleteUser = (userId) => POST('/manage/user/delete', { userId })
+
 // 上传图片连接
 export const uploadImg = '/api//manage/img/upload'
 
