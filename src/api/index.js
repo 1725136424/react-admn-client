@@ -26,6 +26,15 @@ export const getCategoryById = (categoryId) => GET('/manage/category/info', { ca
 // 获取分页商品数据
 export const getProducts = (pageNum = 1, pageSize = 5) => GET('/manage/product/list', { pageNum, pageSize })
 
+// 保存商品
+export const saveProduct = (params) => POST('/manage/product/add', params)
+
+// 修改商品
+export const editProduct = (params) => POST('/manage/product/update', params)
+
+// 上传图片连接
+export const uploadImg = '/api//manage/img/upload'
+
 // 根据name和desc查询商品
 export const searchProductByCondition = (type = SEARCH_DESC, keywords, pageNum = 1, pageSize = 5) => {
     if (type === SEARCH_DESC) {

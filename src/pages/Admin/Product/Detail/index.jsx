@@ -30,10 +30,11 @@ class Detail extends PureComponent {
     }
 
     initCategory = async (pCId, CId) => {
+        console.log(pCId, CId);
         // 获取分类数据
         if (pCId=== '0') {
             const { data: { name } } = await getCategoryById(CId)
-            this.setState({ categoryName:  "一级分类列表 --> " + name})
+            this.setState({ categoryName:  name})
         } else {
             const [data1, data2] = await Promise.all([getCategoryById(pCId), getCategoryById(CId)])
             this.setState({ categoryName: `${ data1.data.name } --> ${ data2.data.name }`})
@@ -73,7 +74,7 @@ class Detail extends PureComponent {
                             <h1 className='title'>商品图片: </h1>
                             <span className='intro'>
                                 {
-                                    state.imgs.map(item => <img style={{ width: 150, height: 150, marginRight: 10 }} key={ item } src={ `/upload/${ item }` } alt=""/>)
+                                    state.imgs.map(item => <img style={{ width: 150, height: 150, marginRight: 10 }} key={ item } src={ `/api/upload/${ item }` } alt=""/>)
                                 }
                             </span>
                         </List.Item>

@@ -45,7 +45,7 @@ class Home extends PureComponent {
         if (status === 0) {
             let { list, pageNum, pageSize, total } = data
             list = list.map(item => ({ ...item, key: item._id }))
-            this.setState(state => ({ products: list, page: { ...state.page, current: pageNum, pageSize, total }}))
+            this.setState(state => ({ products: list, page: { ...state.page, current: pageNum, pageSize, total } }))
         } else {
             message.error('获取商品数据失败')
         }
@@ -66,7 +66,7 @@ class Home extends PureComponent {
 
         // 额外信息
         this.extra = (
-            <Button onClick={ this.skipAddAndUpdateUI } type='primary' icon={ <PlusOutlined/> }>添加商品</Button>
+            <Button onClick={ () => this.skipAddAndUpdateUI() } type='primary' icon={ <PlusOutlined/> }>添加商品</Button>
         )
 
         // columns
@@ -106,7 +106,7 @@ class Home extends PureComponent {
                     return (
                         <>
                             <LinkButton onClick={ () => this.skipDetailUI(cur) }>详情</LinkButton>
-                            <LinkButton onClick={ this.skipAddAndUpdateUI }>修改</LinkButton>
+                            <LinkButton onClick={ () => this.skipAddAndUpdateUI(cur) }>修改</LinkButton>
                         </>
                     )
                 }
@@ -120,8 +120,8 @@ class Home extends PureComponent {
     }
 
     // 跳转添加修改界面
-    skipAddAndUpdateUI = () => {
-        this.props.history.push(ADMIN_PRODUCT_ADD_ADN_UPDATE_ROUTE)
+    skipAddAndUpdateUI = (cur) => {
+        this.props.history.push(ADMIN_PRODUCT_ADD_ADN_UPDATE_ROUTE, cur)
     }
 
     // 搜索类型的改变
@@ -173,7 +173,6 @@ class Home extends PureComponent {
     }
 
     render() {
-        console.log(11);
         const { products: dataSource, page, loading } = this.state
         const { columns } = this
         return (
