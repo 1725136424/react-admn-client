@@ -38,6 +38,12 @@ export const getAllUser = () => GET('/manage/user/list')
 // 获取所有的角色
 export const getAllRole = () => GET('/manage/role/list')
 
+// 分配权限
+export const assignPermission = (params) => POST('/manage/role/update', params)
+
+// 添加角色
+export const saveRole = (params) => POST('/manage/role/add', params)
+
 // 动态添加修改用户
 export const addAndUpdateUser = (type, params) => POST(`/manage/user/${ type }`, params)
 
