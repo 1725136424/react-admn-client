@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { Form, Input, Modal, Tree, message } from 'antd'
 import PropTypes from 'prop-types'
 import menuConfig from "../../../../config/menuConfig";
-import { getStore } from "../../../../utils/storageUtils";
+import { getStore, removeStore, setStore } from "../../../../utils/storageUtils";
 import { USER_KEY } from "../../../../constant";
 import { assignPermission } from "../../../../api";
 
@@ -34,9 +34,17 @@ class PermissonModal extends PureComponent {
         }
         // 获取所选择的树形结构
         this.setState({ confirmLoading: true })
-        const { status } = await assignPermission(object)
+        const { status, data } = await assignPermission(object)
         this.setState({ confirmLoading: false })
         if (status === 0) {
+            // 更新store中的权限
+            const user = getStore(USER_KEY)
+            if (user.role_id === data._id) {
+                // 为该角色，更新权限
+                user.role = data
+                removeStore(USER_KEY)
+                setStore(USER_KEY, user)
+            }
             message.success('分配权限成功')
             this.setState({ visible: false })
             this.props.fetchRoles()
@@ -50,14 +58,13 @@ class PermissonModal extends PureComponent {
     }
 
     treeCheck = (checkedKeys) => {
-
-        this.checkedKeys = checkedKeys.filter(item => item !== '/flag')
+        this.checkedKeys = checkedKeys.filter(item => item !== '/all')
     }
 
     UNSAFE_componentWillMount() {
         // 设置菜单数据
         // 构造数据
-        this.menus = [{ title: '平台权限', key: '/flag', children: menuConfig }]
+        this.menus = [{ title: '平台权限', key: '/all', children: menuConfig }]
     }
 
     render() {
@@ -66,7 +73,6 @@ class PermissonModal extends PureComponent {
             confirmLoading
         } = this.state
         const { selectedRow } = this.props
-        console.log(selectedRow.menus);
         const { handleOk, handleCancel, menus } = this
         return (
             <>

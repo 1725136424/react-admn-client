@@ -30,6 +30,9 @@ export const SEARCH_DESC = 'desc'
 export const PRODUCT_PUSTAWAY_STATUS = 1
 export const PRODUCT_SOLE_OUT_STATUS = 2
 
+// admin标识
+export const ADMIN = '管理员'
+
 
 function concatPath(path) {
     return ADMIN_ROUTE === '/' ? path : ADMIN_ROUTE + path
