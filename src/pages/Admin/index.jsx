@@ -1,4 +1,5 @@
 import React, { PureComponent } from 'react';
+import { connect } from 'react-redux'
 import { Redirect, Route, Switch } from 'react-router-dom'
 import { Layout } from 'antd'
 import {
@@ -24,7 +25,6 @@ import PieChart from './PieChart'
 import Product from './Product'
 import Role from './Role'
 import User from './User'
-import memoryUtils from "../../utils/memoryUtils";
 import './index.less'
 
 const { Footer, Sider, Content } = Layout;
@@ -32,7 +32,7 @@ const { Footer, Sider, Content } = Layout;
 class Admin extends PureComponent {
 
     state = {
-        user: memoryUtils.user,
+        user: this.props.user,
         collapsed: false
     }
 
@@ -45,10 +45,9 @@ class Admin extends PureComponent {
 
     // 判断当前是否登录
     componentDidMount() {
-        if (!memoryUtils.user._id) {
+        if (!this.props.user._id) {
             this.props.history.replace(LOGIN_ROUTE)
         }
-
     }
 
     render() {
@@ -86,4 +85,8 @@ class Admin extends PureComponent {
     }
 }
 
-export default Admin;
+export default connect(
+    state => ({
+        user: state.user
+    })
+)(Admin);

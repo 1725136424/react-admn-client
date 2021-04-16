@@ -1,5 +1,5 @@
 import React, {PureComponent, Fragment} from 'react';
-import {BrowserRouter, Route, Switch, Redirect} from 'react-router-dom'
+import { BrowserRouter, Route, Switch, Redirect} from 'react-router-dom'
 import { LOGIN_ROUTE, ADMIN_ROUTE } from "./constant";
 import Login from './pages/Login'
 import Admin from './pages/Admin'

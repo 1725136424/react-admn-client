@@ -14,11 +14,11 @@ import {
 
 import {
     ADMIN_BAR_ROUTE,
-    ADMIN_CATEGORY_ROUTE,
+    ADMIN_CATEGORY_ROUTE, ADMIN_CHARTS,
     ADMIN_HOME_ROUTE,
     ADMIN_LINE_ROUTE,
     ADMIN_ORDER_ROUTE,
-    ADMIN_PIE_ROUTE,
+    ADMIN_PIE_ROUTE, ADMIN_PRODUCT,
     ADMIN_PRODUCT_ROUTE,
     ADMIN_ROLE_ROUTE,
     ADMIN_USER_ROUTE,
@@ -31,7 +31,7 @@ const menuList = [
     },
     {
         title: '商品',
-        key: '/products',
+        key: ADMIN_PRODUCT,
         icon: AppstoreAddOutlined,
         children: [ // 子菜单列表
             {
@@ -60,7 +60,7 @@ const menuList = [
 
     {
         title: '图形图表',
-        key: '/charts',
+        key: ADMIN_CHARTS,
         icon: AreaChartOutlined,
         children: [
             {

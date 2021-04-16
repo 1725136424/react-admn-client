@@ -14,7 +14,8 @@ class Role extends PureComponent {
         roles: [],
         visible: false,
         confirmLoading: false,
-        selectedRow: {}
+        selectedRow: {},
+        modalVisible: false
     }
 
     // 添加角色
@@ -54,9 +55,8 @@ class Role extends PureComponent {
     setPermission = () => {
         const { selectedRow } = this.state
         if (selectedRow) {
-            console.log(selectedRow);
             // 显示分配模态框
-            this.permissonModal.setState({ visible: true })
+            this.setState({ modalVisible: true })
         } else {
             message.error('操作异常')
         }
@@ -110,6 +110,11 @@ class Role extends PureComponent {
         ];
     }
 
+    // 子组件的隐藏消息
+    showAndHideSon = (visible) => {
+        this.setState({ modalVisible: visible })
+    }
+
     UNSAFE_componentWillMount() {
         this.initTableInfo()
     }
@@ -126,7 +131,8 @@ class Role extends PureComponent {
             roles,
             visible,
             confirmLoading,
-            selectedRow
+            selectedRow,
+            modalVisible
         } = this.state
 
         const { columns, handleOk, handleCancel } = this
@@ -165,8 +171,9 @@ class Role extends PureComponent {
                     </Form>
                 </Modal>
                 <PermissonModal selectedRow={ selectedRow }
+                                setVisible={ this.showAndHideSon }
                                 fetchRoles={ this.fetchRoles }
-                                ref={ (a) => this.permissonModal = a }/>
+                                visible={ modalVisible }/>
             </div>
         );
     }

@@ -1,18 +1,15 @@
 import React, { PureComponent } from 'react';
+import { connect } from 'react-redux'
 import { Button, Form, Input, message } from 'antd';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { login } from "../../api";
-import memoryUtils from "../../utils/memoryUtils";
-import { getStore, setStore } from '../../utils/storageUtils'
-import { USER_KEY, ADMIN_ROUTE } from "../../constant";
+import { setStore } from '../../utils/storageUtils'
+import { ADMIN_ROUTE, USER_KEY } from "../../constant";
 import logo from '../../asserts/logo.png'
 import './index.less'
+import { saveUser } from "../../redux/actions/user";
 
 class Login extends PureComponent {
-
-    onFinish = (values) => {
-        console.log('Received values of form: ', values);
-    }
 
     submit = async (name, { values, forms }) => {
         // 发送数据
@@ -23,8 +20,8 @@ class Login extends PureComponent {
             // 登录成功
             // 保存用户至LocalStorage
             setStore(USER_KEY, data)
-            // 保存内存
-            memoryUtils.user = data
+            // 保存至redux中
+            this.props.saveUser(data)
             // 跳转路由
             this.props.history.push(ADMIN_ROUTE)
             message.success("登录成功")
@@ -36,7 +33,7 @@ class Login extends PureComponent {
 
     UNSAFE_componentWillMount() {
         // 已经登录跳转后台界面
-        if (getStore(USER_KEY)._id) {
+        if (this.props.user && this.props.user._id) {
             this.props.history.push(ADMIN_ROUTE)
         }
     }
@@ -125,4 +122,11 @@ class Login extends PureComponent {
     }
 }
 
-export default Login;
+export default connect(
+    state => ({
+        user: state.user
+    }),
+    {
+        saveUser
+    }
+)(Login);

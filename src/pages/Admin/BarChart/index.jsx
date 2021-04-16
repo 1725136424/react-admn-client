@@ -47,7 +47,7 @@ class BarChart extends PureComponent {
         }
     }
 
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         this.title = (
             <Button type='primary' onClick={ this.update }>更新</Button>
         )

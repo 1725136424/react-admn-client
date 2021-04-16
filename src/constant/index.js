@@ -7,12 +7,14 @@ export const AMPA_KEY = '5c4a52a944b898567415ab3c88f60ab0'
 // 路由路径常量
 export const LOGIN_ROUTE = '/login'
 // 后台管理路由常量
-export const ADMIN_ROUTE = '/'
+export const ADMIN_ROUTE = '/admin'
 export const ADMIN_HOME_ROUTE = concatPath('/home')
+export const ADMIN_PRODUCT = concatPath('/products')
 export const ADMIN_CATEGORY_ROUTE = concatPath('/products/category')
 export const ADMIN_PRODUCT_ROUTE = concatPath('/products/product')
 export const ADMIN_USER_ROUTE = concatPath('/user')
 export const ADMIN_ROLE_ROUTE = concatPath('/role')
+export const ADMIN_CHARTS = concatPath('/charts')
 export const ADMIN_BAR_ROUTE = concatPath('/charts/bar')
 export const ADMIN_LINE_ROUTE = concatPath('/charts/line')
 export const ADMIN_PIE_ROUTE = concatPath('/charts/pie')

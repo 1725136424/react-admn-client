@@ -1,10 +1,11 @@
 import React, { PureComponent } from 'react';
-import { Button, Menu } from 'antd'
 import { NavLink, withRouter } from 'react-router-dom'
+import { connect } from 'react-redux'
+import { Button, Menu } from 'antd'
 import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
 import menuConfig from '../../config/menuConfig'
-import { ADMIN, ADMIN_HOME_ROUTE, ADMIN_PRODUCT_ROUTE, USER_KEY } from "../../constant";
-import { getStore } from "../../utils/storageUtils";
+import { ADMIN, ADMIN_HOME_ROUTE, ADMIN_PRODUCT_ROUTE } from "../../constant";
+import { setMenu } from "../../redux/actions/menu";
 
 const { SubMenu } = Menu;
 
@@ -12,7 +13,7 @@ const { SubMenu } = Menu;
 class LeftNav extends PureComponent {
 
     // 遍历生成导航菜单项 (map遍历)
-    generateMenuListByMap = (list, role) => {
+    /*generateMenuListByMap = (list, role) => {
         return list.map(item => {
             if (item.children) {
                 // 有子菜单 --> 生成子菜单项
@@ -38,7 +39,7 @@ class LeftNav extends PureComponent {
                 }
             }
         })
-    }
+    }*/
 
     //reduce遍历 对于reduce方法，他是一个迭代累计的方法，初始值是累计方法的初值，cur是当前遍历数组的元素
     generateMenuListByReduce = (list, role) => {
@@ -50,7 +51,6 @@ class LeftNav extends PureComponent {
                     pre.push(
                         <SubMenu key={ cur.key } title={ cur.title } icon={ React.createElement(cur.icon) }>
                             {
-                                // console.log(item.children)
                                 this.generateMenuListByReduce(cur.children, role)
                             }
                         </SubMenu>
@@ -58,7 +58,7 @@ class LeftNav extends PureComponent {
                 }
             } else {
                 // 无孩子
-                if (role.name === ADMIN || cur.key === ADMIN_HOME_ROUTE  || role.menus.indexOf(cur.key) !== -1) {
+                if (role.name === ADMIN || cur.key === ADMIN_HOME_ROUTE || role.menus.indexOf(cur.key) !== -1) {
                     pre.push(
                         <Menu.Item key={ cur.key } icon={ React.createElement(cur.icon) }>
                             <NavLink to={ cur.key }>
@@ -81,16 +81,40 @@ class LeftNav extends PureComponent {
             selectedKey = ADMIN_PRODUCT_ROUTE
         }
         this.selectKey = selectedKey
-
         this.openKey = selectedKey.substring(0, selectedKey.lastIndexOf("/"))
     }
 
+    // 根据menu_name 获取菜单对象
+    getMenuByMenuName = (list, key) => {
+        let cur = {}
+        for (let i = 0; i < list.length; i++) {
+            const item = list[i]
+            if (!item.children) {
+                if (item.key === key) {
+                    cur = item
+                    break
+                }
+            } else {
+                if (!cur.title) {
+                    cur = this.getMenuByMenuName(item.children, key)
+                }
+            }
+        }
+        return cur
+    }
+
+    // 选中menu保存数据至redux中，不能写在渲染函数中，这样会导致函数递归调用
+    selectMenu = ({ key }) => {
+        // 保存至redux中
+        this.props.setMenu(this.getMenuByMenuName(menuConfig, key))
+    }
+
     render() {
-        // 根据权限获取菜单列表
-        const { role  } = getStore(USER_KEY)
-        const menuList = this.generateMenuListByReduce(menuConfig, role)
         this.saveNavStatus()
-        const { selectKey, openKey } = this
+        // 根据权限获取菜单列表
+        const { role } = this.props.user
+        const menuList = this.generateMenuListByReduce(menuConfig, role)
+        const { openKey, selectKey } = this
         const { collapsed, toggleCollapsed } = this.props
         return (
             <div>
@@ -98,6 +122,7 @@ class LeftNav extends PureComponent {
                     { React.createElement(collapsed ? MenuUnfoldOutlined : MenuFoldOutlined) }
                 </Button>
                 <Menu
+                    onSelect={ this.selectMenu }
                     selectedKeys={ [selectKey] }
                     defaultOpenKeys={ [openKey] }
                     mode="inline"
@@ -111,4 +136,12 @@ class LeftNav extends PureComponent {
     }
 }
 
-export default withRouter(LeftNav);
+export default connect(
+    state => ({
+        user: state.user,
+        menu: state.menu
+    }),
+    {
+        setMenu
+    }
+)(withRouter(LeftNav));

@@ -3,7 +3,7 @@ import {message} from 'antd'
 
 
 // 设置全局请求
-axios.defaults.baseURL = 'http://localhost:3001/api';
+axios.defaults.baseURL = 'http://localhost:3000/api';
 
 function ajax (url, method = 'GET', params = {}) {
     return new Promise((resolve, reject) => {

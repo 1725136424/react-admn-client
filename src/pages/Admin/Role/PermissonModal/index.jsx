@@ -1,31 +1,33 @@
 import React, { PureComponent } from 'react';
-import { Form, Input, Modal, Tree, message } from 'antd'
+import { connect } from 'react-redux'
+import { Form, Input, message, Modal, Tree } from 'antd'
 import PropTypes from 'prop-types'
 import menuConfig from "../../../../config/menuConfig";
-import { getStore, removeStore, setStore } from "../../../../utils/storageUtils";
+import { removeStore, setStore } from "../../../../utils/storageUtils";
 import { USER_KEY } from "../../../../constant";
 import { assignPermission } from "../../../../api";
+import { saveUser } from "../../../../redux/actions/user";
 
 const { Item } = Form
 
 class PermissonModal extends PureComponent {
 
     static propTypes = {
-        fetchRoles: PropTypes.func.isRequired
+        fetchRoles: PropTypes.func.isRequired,
+        setVisible: PropTypes.func.isRequired,
+        selectedRow: PropTypes.object.isRequired,
+        visible: PropTypes.bool.isRequired
     }
 
     state = {
-        visible: false,
         confirmLoading: false
-
     }
 
     handleOk = async () => {
         // 获取数据
         const { _id } = this.props.selectedRow
         const menus = this.checkedKeys
-        // TODO redux优化
-        const { username } = getStore(USER_KEY)
+        const { username } = this.props.user
         const object = {
             _id,
             menus,
@@ -38,15 +40,18 @@ class PermissonModal extends PureComponent {
         this.setState({ confirmLoading: false })
         if (status === 0) {
             // 更新store中的权限
-            const user = getStore(USER_KEY)
+            const user = this.props.user
             if (user.role_id === data._id) {
                 // 为该角色，更新权限
                 user.role = data
+                // store保存
                 removeStore(USER_KEY)
                 setStore(USER_KEY, user)
+                // 设置redux
+                this.props.saveUser(user)
             }
             message.success('分配权限成功')
-            this.setState({ visible: false })
+            this.props.setVisible(false)
             this.props.fetchRoles()
         } else {
             message.error('分配权限失败')
@@ -54,7 +59,7 @@ class PermissonModal extends PureComponent {
     }
 
     handleCancel = () => {
-        this.setState({ visible: false })
+        this.props.setVisible(false)
     }
 
     treeCheck = (checkedKeys) => {
@@ -69,10 +74,9 @@ class PermissonModal extends PureComponent {
 
     render() {
         const {
-            visible,
             confirmLoading
         } = this.state
-        const { selectedRow } = this.props
+        const { selectedRow, visible } = this.props
         const { handleOk, handleCancel, menus } = this
         return (
             <>
@@ -102,4 +106,11 @@ class PermissonModal extends PureComponent {
     }
 }
 
-export default PermissonModal;
+export default connect(
+    state => ({
+        user: state.user
+    }),
+    {
+        saveUser
+    }
+)(PermissonModal);
