@@ -80,10 +80,6 @@ class LeftNav extends PureComponent {
         if (selectedKey.indexOf(ADMIN_PRODUCT_ROUTE) !== -1) {
             selectedKey = ADMIN_PRODUCT_ROUTE
         }
-        // 保存至redux中
-        if (selectedKey) {
-            this.props.setMenu(this.getMenuByMenuName(menuConfig, selectedKey))
-        }
         this.selectKey = selectedKey
         this.openKey = selectedKey.substring(0, selectedKey.lastIndexOf("/"))
     }
@@ -107,11 +103,17 @@ class LeftNav extends PureComponent {
         return cur
     }
 
+    // 选中menu保存数据至redux中，不能写在渲染函数中，这样会导致函数递归调用
+    selectMenu = ({ key }) => {
+        // 保存至redux中
+        this.props.setMenu(this.getMenuByMenuName(menuConfig, key))
+    }
+
     render() {
+        this.saveNavStatus()
         // 根据权限获取菜单列表
         const { role } = this.props.user
         const menuList = this.generateMenuListByReduce(menuConfig, role)
-        this.saveNavStatus()
         const { openKey, selectKey } = this
         const { collapsed, toggleCollapsed } = this.props
         return (
@@ -120,6 +122,7 @@ class LeftNav extends PureComponent {
                     { React.createElement(collapsed ? MenuUnfoldOutlined : MenuFoldOutlined) }
                 </Button>
                 <Menu
+                    onSelect={ this.selectMenu }
                     selectedKeys={ [selectKey] }
                     defaultOpenKeys={ [openKey] }
                     mode="inline"

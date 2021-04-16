@@ -5,11 +5,10 @@ import { Modal } from 'antd'
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import LinkButton from '../LinkButton'
 import { removeStore } from '../../utils/storageUtils'
-import { ADMIN_PRODUCT_ROUTE, LOGIN_ROUTE, USER_KEY } from '../../constant'
+import { LOGIN_ROUTE, USER_KEY } from '../../constant'
 import { parse } from '../../utils/dateUtils'
 import { locate, queryWeather } from '../../api'
 import { removeUser } from "../../redux/actions/user";
-import menuConfig from '../../config/menuConfig'
 import './index.less'
 
 const { confirm } = Modal

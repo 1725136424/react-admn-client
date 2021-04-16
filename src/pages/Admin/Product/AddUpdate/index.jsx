@@ -6,6 +6,7 @@ import RichText from './RichText/'
 import { editProduct, getCategorys, saveProduct, uploadImg } from "../../../../api";
 import { getBase64 } from "../../../../utils/fileUtils";
 import { ADMIN_PRODUCT_HOME_ROUTE } from "../../../../constant";
+import memoryUtils from "../../../../utils/memoryUtils";
 
 class AddUpdate extends PureComponent {
 
@@ -53,7 +54,6 @@ class AddUpdate extends PureComponent {
     fetchParentCategory = async () => {
         let { data } = await getCategorys()
         data = data.map(item => ({ ...item, isLeaf: false }))
-        console.log(data);
         this.setState({ categorys: data })
     }
 
@@ -211,10 +211,10 @@ class AddUpdate extends PureComponent {
         // 获取分类数据
         this.fetchParentCategory()
         // 判断当前是否为增加还是修改操作
-        const { state } = this.props.location
-        if (state) {
+        const product = memoryUtils.product
+        if (product) {
             // 构造修改数据
-            this.initUpdateData(state)
+            this.initUpdateData(product)
         }
     }
 

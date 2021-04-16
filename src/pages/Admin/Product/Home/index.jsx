@@ -10,6 +10,7 @@ import {
     SEARCH_NAME
 } from "../../../../constant";
 import { getProducts, searchProductByCondition, updateProductStatus } from "../../../../api";
+import memoryUtils from "../../../../utils/memoryUtils";
 
 const { Option } = Select
 
@@ -114,14 +115,18 @@ class Home extends PureComponent {
         ];
     }
 
-    // 跳转详情界面
+    // 跳转详情界面 对于HashRouter来说是不能传递值的，所以会报空指针异常
     skipDetailUI = (cur) => {
-        this.props.history.push(ADMIN_PRODUCT_DETAIL_ROUTE, cur)
+        // 传递值
+        memoryUtils.product = cur
+        this.props.history.push(ADMIN_PRODUCT_DETAIL_ROUTE)
     }
 
     // 跳转添加修改界面
     skipAddAndUpdateUI = (cur) => {
-        this.props.history.push(ADMIN_PRODUCT_ADD_ADN_UPDATE_ROUTE, cur)
+        // 传递值
+        memoryUtils.product = cur
+        this.props.history.push(ADMIN_PRODUCT_ADD_ADN_UPDATE_ROUTE)
     }
 
     // 搜索类型的改变

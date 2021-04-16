@@ -48,7 +48,6 @@ class Admin extends PureComponent {
         if (!this.props.user._id) {
             this.props.history.replace(LOGIN_ROUTE)
         }
-
     }
 
     render() {
