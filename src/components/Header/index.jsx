@@ -1,14 +1,15 @@
 import React, { PureComponent } from 'react';
 import { withRouter } from 'react-router-dom'
+import { connect } from 'react-redux'
 import { Modal } from 'antd'
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import LinkButton from '../LinkButton'
-import memoryUtils from '../../utils/memoryUtils'
 import { removeStore } from '../../utils/storageUtils'
 import { ADMIN_PRODUCT_ROUTE, LOGIN_ROUTE, USER_KEY } from '../../constant'
-import menuConfig from '../../config/menuConfig'
 import { parse } from '../../utils/dateUtils'
 import { locate, queryWeather } from '../../api'
+import { removeUser } from "../../redux/actions/user";
+import menuConfig from '../../config/menuConfig'
 import './index.less'
 
 const { confirm } = Modal
@@ -64,6 +65,8 @@ class Header extends PureComponent {
             onOk: () => {
                 // 退出
                 removeStore(USER_KEY)
+                // 移除
+                this.props.removeUser()
                 // 登出
                 this.props.history.replace(LOGIN_ROUTE)
             }
@@ -87,25 +90,10 @@ class Header extends PureComponent {
         this.setState({ weather: lives[0].weather })
     }
 
-    // 初始化头部数据
-    initHeaderInfo = () => {
-        // 获取用户名
-        let { username } = memoryUtils.user
-        // 获取title
-        let { pathname } = this.props.location
-        if (pathname.indexOf(ADMIN_PRODUCT_ROUTE) !== -1) {
-            pathname = ADMIN_PRODUCT_ROUTE
-        }
-        const { title } = this.getNavByMenuList(menuConfig, pathname)
-        this.username = username
-        this.title = title
-    }
-
     render() {
-        this.initHeaderInfo()
         // 获取动态数据
         const { currentTime, weather } = this.state
-        const { username, title } = this
+        const { user: {username}, menu } = this.props
         return (
             <div className='main-header'>
                 <div className='main-header-top'>
@@ -114,7 +102,7 @@ class Header extends PureComponent {
                 <div className='main-header-bottom'>
                     <div className="main-header-bottom-left">
                         {
-                            title
+                            menu? menu.title: null
                         }
                     </div>
                     <div className="main-header-bottom-right">
@@ -132,4 +120,12 @@ class Header extends PureComponent {
     }
 }
 
-export default withRouter(Header);
+export default connect(
+    state => ({
+        user: state.user,
+        menu: state.menu
+    }),
+    {
+        removeUser
+    }
+)((withRouter(Header)));
